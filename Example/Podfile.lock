@@ -1,0 +1,16 @@
+PODS:
+  - SFScaleImageView (0.1.0)
+
+DEPENDENCIES:
+  - SFScaleImageView (from `../`)
+
+EXTERNAL SOURCES:
+  SFScaleImageView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  SFScaleImageView: 75cdfc95e267897562036d7bf1a11940be327f85
+
+PODFILE CHECKSUM: ee856e5c784fad352045ce8b0d63bddec591b869
+
+COCOAPODS: 1.5.3

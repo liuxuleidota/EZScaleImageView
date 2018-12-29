@@ -1,0 +1,6 @@
+framework module SFScaleImageView {
+  umbrella header "SFScaleImageView-umbrella.h"
+
+  export *
+  module * { export * }
+}

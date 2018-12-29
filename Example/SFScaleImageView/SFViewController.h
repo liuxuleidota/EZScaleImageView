@@ -7,7 +7,8 @@
 //
 
 @import UIKit;
+#import <SFScaleImageView/SFScaleImageView-umbrella.h>
 
-@interface SFViewController : UIViewController
+@interface SFViewController : SFPreviewSingleImgViewController
 
 @end

@@ -1,0 +1,6 @@
+framework module Pods_SFScaleImageView_Example {
+  umbrella header "Pods-SFScaleImageView_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}
