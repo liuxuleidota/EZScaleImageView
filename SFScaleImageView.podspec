@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SFScaleImageView'
-  s.version          = '0.1.0'
+  s.version          = '0.0.1'
   s.summary          = '基本的图片缩放功能'
 
 # This description is used to generate tags and improve search results.
