@@ -77,47 +77,56 @@ pod 'SFScaleImageView'
 //scrollView进行了缩放
 //通过方法zoomToRect来缩放时，这个方法只会调用一次，调用时间点在scrollViewWillBeginZooming之后，scrollViewDidEndZooming之前
 //使用双指捏合手势缩放中，这个方法会一直调用,缩放中,scrollView的contentSize会变化,即放大缩小
+//如果内容宽(高)小于scrollView宽(高),内容以scrollView宽(高)为准居中
+//如果内容宽(高)大于scrollView宽(高),内容从x=0(y=0)开始
+//如此便达到了,内容任一方向小于父容器时,居中该方向,
+//大于父容器时,内容占满该方向
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView{
-    if (scrollView.zoomScale > 1) {
-        //在手势缩放过程中，
-        //imageWidth一直大于screenWidth,但是imageWidth一直等于scrollView.contentSize.width，
-        //所以一直保持_imageView的center.x等于contentSize.width/2
-        //imageHeight一直<=scrollView.height，所以要保持_imageView的center.y等于scrollView.height/2
-        _imageView.center = CGPointMake(scrollView.contentSize.width/2, scrollView.frame.size.height/2);
+    UIView *targetView = [self viewForZoomingInScrollView:scrollView];
+    BOOL widthIsSmall = targetView.width < scrollView.width;
+    BOOL heightIsSmall = targetView.height < scrollView.height;
+    
+    if (widthIsSmall) {
+        targetView.centerX = scrollView.centerX;
     } else {
-        _imageView.center = scrollView.center;
+        targetView.left = 0;
+    }
+    
+    if (heightIsSmall) {
+        targetView.centerY = scrollView.centerY;
+    } else {
+        targetView.top = 0;
     }
 }
 ```
 ## 四、处理点击事件
 ```
-/*
- 以点击点为中心，计算需要缩放查看的区域
- 这个方法要返回的坐标系是对于viewForZoomingInScrollView方法返回的view来说，这一点要理解！在本例中即为imageView
- */
-- (CGRect)getRectWithScale:(CGFloat)scale andCenter:(CGPoint)center{
-    CGFloat oldWidth = _imageView.frame.size.width;
-    //newWidth等于oldWidth（scale为1时）除以目标scale，
-    //解释：当目标scale>1时，newWidth小于原宽度，而新的宽度会被用来充满scroll.width，所以导致了图片局部放大
-    CGFloat newWidth = oldWidth/scale;
-    //newHeight等于imageView.height，因为要在竖直方向上撑满
-    CGFloat newHeight = _imageView.frame.size.height;
-    //newX等于center.x - newWidth/2，这里可能会出现新的x小于0或view.right大于superView.width
-    //但是没关系，因为view.frame.origin.x必须在（0, superView.width-view.width）之间
-    CGFloat newX = center.x - newWidth/2;
-    //竖直方向撑满，意味着newY从0开始
-    CGFloat newY = 0;
-    return CGRectMake(newX, newY, newWidth, newHeight);
-}
-
 - (void)doubleTapScrollV:(UITapGestureRecognizer*)tapGes{
-    if (_scrollV.zoomScale > 1) {
-        [_scrollV setZoomScale:1 animated:YES];
-    } else if (_scrollV.zoomScale == 1){
-        CGPoint newCenter = [tapGes locationInView:_imageView];
-        CGRect goalRect = [self getRectWithScale:_scrollV.maximumZoomScale andCenter:newCenter];
-        [_scrollV zoomToRect:goalRect animated:YES];
+    CGFloat currScale = self.scrollV.zoomScale;
+    CGFloat minScale = self.scrollV.minimumZoomScale;
+    CGFloat maxScale = self.scrollV.maximumZoomScale;
+    CGFloat goalScale;
+    
+    if (currScale == minScale) {
+        goalScale = maxScale;
+    } else {
+        goalScale = minScale;
     }
+    
+    if (currScale == goalScale) {
+        return;
+    }
+    
+    CGPoint touchPoint = [tapGes locationInView:[self viewForZoomingInScrollView:self.scrollV]];
+    //缩放后的目标frame大小,当然是通过容器(scrollView)的size/scale来计算的,如下:
+    CGFloat xsize = self.scrollV.frame.size.width/goalScale;
+    CGFloat ysize = self.scrollV.frame.size.height/goalScale;
+    //origin当然是点击点减去一半的宽高,
+    //x,y可能小于0,但是没问题,因为内容不能从负值开始,如下
+    CGFloat x = touchPoint.x-xsize/2;
+    CGFloat y = touchPoint.y-ysize/2;
+    
+    [self.scrollV zoomToRect:CGRectMake(x, y, xsize, ysize) animated:YES];
 }
 ```
 
