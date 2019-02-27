@@ -1,5 +1,5 @@
 PODS:
-  - SFScaleImageView (0.1.0)
+  - SFScaleImageView (0.0.1)
 
 DEPENDENCIES:
   - SFScaleImageView (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SFScaleImageView: 75cdfc95e267897562036d7bf1a11940be327f85
+  SFScaleImageView: a01e4e5f54724f9f20228961fdb58d940ce61d33
 
 PODFILE CHECKSUM: ee856e5c784fad352045ce8b0d63bddec591b869
 
